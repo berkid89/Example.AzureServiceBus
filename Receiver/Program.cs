@@ -8,7 +8,7 @@ namespace Receiver
 {
     class Program
     {
-        const string ServiceBusConnectionString = "Endpoint=sb://jaystacktest.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=h8NC+jTTMMW8vX4sr6ksg26iH+UBnYzLn2rZXrTZndg=";
+        const string ServiceBusConnectionString = "";
         const string QueueName = "mytestqueue";
         static IQueueClient queueClient;
 
