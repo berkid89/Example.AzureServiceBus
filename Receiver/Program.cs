@@ -9,8 +9,9 @@ namespace Receiver
     class Program
     {
         const string ServiceBusConnectionString = "";
-        const string QueueName = "mytestqueue";
-        static IQueueClient queueClient;
+        const string TopicName = "mytesttopic";
+        const string SubscriptionName = "sub1";
+        static ISubscriptionClient topicClient;
 
         static void Main(string[] args)
         {
@@ -21,13 +22,13 @@ namespace Receiver
 
         static async Task MainAsync()
         {
-            queueClient = new QueueClient(ServiceBusConnectionString, QueueName);
+            topicClient = new SubscriptionClient(ServiceBusConnectionString, TopicName, SubscriptionName);
 
             RegisterOnMessageHandlerAndReceiveMessages();
 
             Console.ReadKey();
 
-            await queueClient.CloseAsync();
+            await topicClient.CloseAsync();
         }
 
         static void RegisterOnMessageHandlerAndReceiveMessages()
@@ -35,10 +36,10 @@ namespace Receiver
             var messageHandlerOptions = new MessageHandlerOptions(ExceptionReceivedHandler)
             {
                 MaxConcurrentCalls = 1,
-                AutoComplete = false
+                AutoComplete = false,
             };
 
-            queueClient.RegisterMessageHandler(ProcessMessagesAsync, messageHandlerOptions);
+            topicClient.RegisterMessageHandler(ProcessMessagesAsync, messageHandlerOptions);
         }
 
         static async Task ProcessMessagesAsync(Message message, CancellationToken token)
@@ -47,11 +48,11 @@ namespace Receiver
             {
                 //throw new DivideByZeroException();
                 Console.WriteLine($"Received message: SequenceNumber:{message.SystemProperties.SequenceNumber} Body:{Encoding.UTF8.GetString(message.Body)}");
-                await queueClient.CompleteAsync(message.SystemProperties.LockToken);
+                await topicClient.CompleteAsync(message.SystemProperties.LockToken);
             }
             catch (Exception ex)
             {
-                await queueClient.DeadLetterAsync(message.SystemProperties.LockToken, "error occured!", ex.Message);
+                await topicClient.DeadLetterAsync(message.SystemProperties.LockToken, "error occured!", ex.Message);
             }
         }
 

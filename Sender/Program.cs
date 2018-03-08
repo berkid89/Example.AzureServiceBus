@@ -10,8 +10,8 @@ namespace Sender
     class Program
     {
         const string ServiceBusConnectionString = "";
-        const string QueueName = "mytestqueue";
-        static IQueueClient queueClient;
+        const string TopicName = "mytesttopic";
+        static ITopicClient topicClient;
 
         static void Main(string[] args)
         {
@@ -22,7 +22,7 @@ namespace Sender
 
         static async Task MainAsync()
         {
-            queueClient = new QueueClient(ServiceBusConnectionString, QueueName);
+            topicClient = new TopicClient(ServiceBusConnectionString, TopicName);
 
             // Send Messages
             await SendMessagesAsync(new
@@ -35,7 +35,7 @@ namespace Sender
             Console.WriteLine("Press any key to exit...");
             Console.ReadKey();
 
-            await queueClient.CloseAsync();
+            await topicClient.CloseAsync();
         }
 
         static async Task SendMessagesAsync(object msgBody)
@@ -48,7 +48,7 @@ namespace Sender
                 Console.WriteLine($"Sending message: {msgAsJson}");
 
                 // Send the message to the queue
-                await queueClient.SendAsync(message);
+                await topicClient.SendAsync(message);
 
             }
             catch (Exception exception)
