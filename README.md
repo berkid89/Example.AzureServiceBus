@@ -7,7 +7,7 @@
      git clone https://github.com/berkid89/Example.AzureServiceBus.git
   ```
   
-**HINT:** Dont forget to fill the code with Your own `ServiceBusConnectionString`, `TopicName` and `SubscriptionName`.
+**HINT:** Don't forget to fill the code with Your own `ServiceBusConnectionString`, `TopicName` and `SubscriptionName`.
   
 ## 2. Build & Run the Sender
 
