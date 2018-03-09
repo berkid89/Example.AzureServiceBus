@@ -11,7 +11,7 @@ namespace Receiver
         const string ServiceBusConnectionString = "";
         const string TopicName = "mytesttopic";
         const string SubscriptionName = "sub1";
-        static ISubscriptionClient topicClient;
+        static ISubscriptionClient subClient;
 
         static void Main(string[] args)
         {
@@ -22,13 +22,13 @@ namespace Receiver
 
         static async Task MainAsync()
         {
-            topicClient = new SubscriptionClient(ServiceBusConnectionString, TopicName, SubscriptionName);
+            subClient = new SubscriptionClient(ServiceBusConnectionString, TopicName, SubscriptionName);
 
             RegisterOnMessageHandlerAndReceiveMessages();
 
             Console.ReadKey();
 
-            await topicClient.CloseAsync();
+            await subClient.CloseAsync();
         }
 
         static void RegisterOnMessageHandlerAndReceiveMessages()
@@ -39,7 +39,7 @@ namespace Receiver
                 AutoComplete = false,
             };
 
-            topicClient.RegisterMessageHandler(ProcessMessagesAsync, messageHandlerOptions);
+            subClient.RegisterMessageHandler(ProcessMessagesAsync, messageHandlerOptions);
         }
 
         static async Task ProcessMessagesAsync(Message message, CancellationToken token)
@@ -48,11 +48,11 @@ namespace Receiver
             {
                 //throw new DivideByZeroException();
                 Console.WriteLine($"Received message: SequenceNumber:{message.SystemProperties.SequenceNumber} Body:{Encoding.UTF8.GetString(message.Body)}");
-                await topicClient.CompleteAsync(message.SystemProperties.LockToken);
+                await subClient.CompleteAsync(message.SystemProperties.LockToken);
             }
             catch (Exception ex)
             {
-                await topicClient.DeadLetterAsync(message.SystemProperties.LockToken, "error occured!", ex.Message);
+                await subClient.DeadLetterAsync(message.SystemProperties.LockToken, "error occured!", ex.Message);
             }
         }
 
